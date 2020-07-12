@@ -1,5 +1,24 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+After cloning the repository:
+  Run the following commands in your terminal
+  ### npm install 
+ This will install all the node dependencies
+  ### npm start
+  This will start the development server
+ 
+## Screenshots 
+  ![image](https://user-images.githubusercontent.com/53442257/87243273-51fb2f80-c452-11ea-8d6e-8a6fef86ca28.png)
+  
+  
+![image](https://user-images.githubusercontent.com/53442257/87243283-75be7580-c452-11ea-9687-b60f30a2f08e.png)
+
+
+![image](https://user-images.githubusercontent.com/53442257/87243305-95559e00-c452-11ea-88e2-23bdf558071d.png)
+
+
+
+
 ## Available Scripts
 
 In the project directory, you can run:
