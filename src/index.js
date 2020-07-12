@@ -9,14 +9,23 @@ import Result from './components/Result';
 
 
 class QuizBee extends Component{
-    state = {
-        questionBank : [],
-        score : 0,
-        response : 0
-    }
+    constructor(props){
+        super(props);
 
-    getQuestion = () => {
-        fetchQuestions().then(question => {
+        this.state = {
+            questionBank : [],
+            score : 0,
+            response : 0,
+            numberOfQuestions : null,
+            submit : false
+        }
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    
+
+    getQuestion = (n) => {
+        fetchQuestions(n).then(question => {
             this.setState({
                 questionBank : question
             })
@@ -24,38 +33,73 @@ class QuizBee extends Component{
     }
 
     computeAnswer = (answer, correctAnswer) => {
-        console.log(this.state.score, this.state.response)
+        
         if(answer === correctAnswer)
             this.setState(prevState=>({score : prevState.score + 1}))
-        
-        this.setState({
-            response : this.state.response < 5 ? this.state.response + 1 : 5 
-        })
-    
-
+      
     }
 
-    componentDidMount(){
-        this.getQuestion();
-    }
+    // componentDidMount(){
+    //     this.getQuestion();
+    // }
 
     playAgain = () => {
-        this.getQuestion();
+        // this.getQuestion();
         this.setState({
             score : 0,
-            response : 0
+            response : 0,
+            submit : false
         })
     }
 
-    render(){
-        return (
-            <div className="container">
-                <div className='title'>QuizBee</div>
-                {this.state.questionBank.length > 0 && this.state.response < 5 && this.state.questionBank.map((element,index) => {
-                    return (<QuestionBox questionNumber={index+1} question={element.question} options={element.answers} key={element.questionId} selected={answer => this.computeAnswer(answer, element.correct)} />)
-                })}
+    handleChange(event) {
+        this.setState({numberOfQuestions: parseInt(event.target.value)});
+      }
+    
+      handleSubmit(event) {
+        
+        this.getQuestion(this.state.numberOfQuestions);
+        this.setState({
+            submit : true
+        });
 
-                {this.state.response === 5 ? (<Result score={this.state.score} playAgain={this.playAgain}/>) : null}
+        event.preventDefault();
+      }
+
+    render(){
+       var response = this.state.response;
+       var element = this.state.questionBank;
+        return (
+            <div className="container py-5 text-center">
+                <div className='bg-dark text-light rounded p-3'><h2>Lets Quizz</h2></div>
+                
+                 <div className="shadow rounded p-5" >
+                    {this.state.submit === false ? 
+                    <form className="form-group" onSubmit={this.handleSubmit}>
+                    <label>
+                      <h3>Number of Questions:</h3>
+                      <input className="form-control" type="number" min="1" max="10" value={this.state.numberOfQuestions} onChange={this.handleChange} />
+                    </label><br />
+                    <input className="btn btn-primary" type="submit" value="Submit" />
+                  </form> : null}
+
+                {this.state.response < this.state.numberOfQuestions && this.state.questionBank.length > 0 && this.state.submit !== false ? (<>
+                
+                    <QuestionBox 
+                    questionNumber={this.state.response + 1}
+                    question={element[response].question}
+                    options={element[response].answers}
+                    key={element[response].questionId}
+                    selected={answer => this.computeAnswer(answer,element[response].correct)}
+                    />
+                    <button className="btn btn-info btn-lg mt-3" onClick={() => this.setState({
+                        response : this.state.response + 1}
+                    ) }>Next</button>
+                    </>) : null }
+
+                    {this.state.response == this.state.numberOfQuestions ? <Result score={this.state.score} numberOfQuestions={this.state.numberOfQuestions} playAgain={this.playAgain}/> : null}
+                    </div>
+
             </div>
         )
     }
